@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-secondary: var(--secondary);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline-variant: var(--outline-variant);
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --spacing-8: var(--spacing-8);
+  --spacing-12: var(--spacing-12);
+  --spacing-16: var(--spacing-16);
+
+  --radius-default: var(--radius-default);
+  --radius-md: var(--radius-md);
+
+  --font-heading-lg: var(--text-5xl);
+  --font-heading-md: var(--text-4xl);
+  --font-heading-sm: var(--text-3xl);
+  --font-heading-xs: var(--text-2xl);
+
+  --font-body-lg: var(--text-lg);
+  --font-body-md: var(--text-md);
+  --font-body-sm: var(--text-sm);
+
+  --font-label: var(--text-sm);
+  --font-caption: var(--text-xs);
+}
+
+:root {
+  /* Surfaces */
+  --surface: #080e1c;
+  --surface-dim: #060b16;
+  --surface-bright: #222c41;
+  --surface-container-lowest: #000000;
+  --surface-container-low: #0c1322;
+  --surface-container: #12192a;
+  --surface-container-high: #171f30;
+  --surface-container-highest: #1d2539;
+
+  /* Brand */
+  --primary: #6af2de;
+  --primary-container: #10b7a5;
+  --secondary: #38fbf7;
+  --on-surface: #e0e5f9;
+  --on-surface-variant: #a5abbd;
+  --outline-variant: #424858;
+  --error: #ff716c;
+  --error-container: #9f0519;
+
+  /* Spacing */
+  --spacing-8: 2rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+
+  /* Radius */
+  --radius-default: 0.5rem;
+  --radius-md: 0.75rem;
+
+  /* Typography fontsizes */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 2rem; /* 32px */
+  --text-4xl: 3rem; /* 48px */
+  --text-5xl: 4rem; /* 64px */
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-primary-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+}
+
+.glass-panel {
+  background-color: rgba(18, 25, 42, 0.85);
+  backdrop-filter: blur(20px);
+}
+
+.ambient-glow:hover {
+  box-shadow: 0 0 40px rgba(106, 242, 222, 0.06);
+}
+
+.dot-grid {
+  background-image: radial-gradient(
+    rgba(66, 72, 88, 0.05) 1.5px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-background-color: var(--surface) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--on-surface) !important;
+  caret-color: var(--on-surface) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
