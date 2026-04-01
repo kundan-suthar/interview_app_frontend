@@ -3,6 +3,11 @@
 import { useRouter } from "next/navigation";
 import Sidebar from "./components/Sidebar";
 import { Bell, HelpCircle, Plus } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
+import { useEffect, useState } from "react";
+import { User, UserSchema } from "./profile/types";
+
+
 
 export default function DashboardLayout({
   children,
@@ -10,10 +15,27 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const [userDetails, setUserDetails] = useState<User>({full_name:"", email:""});
+  const getUserDetails = async () => {
+    try {
+      const res = await apiClient("/api/v1/users/me");
+       const parsed = UserSchema.safeParse(res);
+        if (!parsed.success) {
+        console.error("Validation error:", parsed.error);
+        return;
+      }
+      res && setUserDetails(parsed.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUserDetails();
+  }, []);
   return (
     <div className="flex h-screen bg-(--surface) text-(--on-surface) dot-grid overflow-hidden">
       {/* Sidebar - Desktop Only for now */}
-      <Sidebar />
+      <Sidebar userDetails={userDetails} />
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-full overflow-y-auto">
@@ -21,7 +43,7 @@ export default function DashboardLayout({
         <header className="sticky top-0 z-40 bg-(--surface)/80 backdrop-blur-sm px-10 py-6 flex items-center justify-between border-b border-(--outline-variant)/5">
           <div className="flex flex-col">
             <h1 className="text-2xl font-display font-medium text-(--on-surface)">
-              Welcome back, <span className="font-bold">Alex 👋</span>
+              Welcome back, <span className="font-bold"> {userDetails?.full_name} 👋</span>
             </h1>
           </div>
 

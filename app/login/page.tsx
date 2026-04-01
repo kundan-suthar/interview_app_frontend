@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { apiClient } from "@/lib/api/client";
+import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/auth";
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -25,6 +25,7 @@ export default function LoginPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const router = useRouter();
   const onSubmit = async (data: FormData) => {
     setServerError(null);
     const formData = new FormData();
@@ -35,6 +36,7 @@ export default function LoginPage() {
       setLoading(true);
       const res: any = await authApi.login(formData);
       reset();
+      router.push("/dashboard")
       return res;
     } catch (error: any) {
       console.log("error", error.message);

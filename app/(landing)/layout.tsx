@@ -21,8 +21,6 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${inter.variable}`}>
-      <body>{children}</body>
-    </html>
+    <>{children}</>
   );
 }

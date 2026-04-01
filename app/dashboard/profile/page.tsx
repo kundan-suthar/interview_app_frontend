@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Upload, X, User, ArrowRight, ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -82,6 +82,8 @@ export default function ProfilePage() {
     }
   };
 
+
+
   const handleAddSkill = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && newSkill.trim()) {
       e.preventDefault();
@@ -95,6 +97,7 @@ export default function ProfilePage() {
   const removeSkill = (skillToRemove: string) => {
     setSkills(skills.filter((s) => s !== skillToRemove));
   };
+
 
   return (
     <div className="max-w-[960px] mx-auto py-12 md:py-16">
