@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { User as userType } from "../profile/types";
 import { useAuthStore } from "@/store/authStore";
 import { apiClient } from "@/lib/api/client";
+import { authApi } from "@/lib/api/auth";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -42,9 +43,7 @@ export default function Sidebar({ userDetails }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      const res = await apiClient("/api/v1/auth/logout", {
-        method: "POST",
-      });
+      const res = await authApi.logout();
       console.log(res);
     } catch (error) {
       console.log(error);

@@ -1,9 +1,10 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 import { getErrorMessage } from "./errors";
+import { useAuthStore } from "@/store/authStore";
 
 export const authApi = {
   login: async (formData: FormData) => {
-    const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
+    const response = await fetch(`${BASE_URL}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
@@ -30,10 +31,16 @@ export const authApi = {
     return res;
   },
 
-  // logout: async () => {
-  //   await fetch(`${BASE_URL}/api/v1/auth/logout`, {
-  //     method: "POST",
-  //     credentials: "include",
-  //   });
-  // },
+  logout: async () => {
+      const { accessToken } = useAuthStore.getState();
+
+    await fetch(`${BASE_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`  
+      },
+    });
+  },
 };
