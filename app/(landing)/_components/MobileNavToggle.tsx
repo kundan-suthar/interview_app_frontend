@@ -43,8 +43,8 @@ export const MobileNavToggle = () => {
           </nav>
           <div className="flex flex-col gap-4 mt-4 border-t border-[var(--outline-variant)]/15 pt-6">
             {/* <CTAButton href="/login" variant="tertiary" className="w-full text-center py-3">Sign In</CTAButton> */}
-           <Link href="/login">Sign In</Link>
-           <CTAButton href='/register' variant="primary" className="w-full text-center py-3">Get Started</CTAButton>
+           <Link className="w-full text-center py-3 text-[var(--on-surface)] bg-transparent rounded-full hover:bg-[var(--surface-container-low)] px-4"  href="/login">Sign In</Link>
+           <Link className="w-full text-center py-3 bg-primary-gradient text-[var(--surface-container-lowest)] rounded-[var(--radius-md)] hover:scale-105 hover:shadow-[0_0_20px_rgba(106,242,222,0.4)] font-bold"  href="/register">Get Started</Link>
           </div>
         </div>
       )}

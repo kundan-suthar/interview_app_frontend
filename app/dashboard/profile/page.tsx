@@ -23,6 +23,9 @@ export default function ProfilePage() {
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [bio, setBio] = useState("");
+  const [headline, setHeadline] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorModalOpen(false);
@@ -73,7 +76,7 @@ export default function ProfilePage() {
         body: JSON.stringify(payload),
       });
       console.log("Profile updated successfully:", response);
-      alert("Profile updated successfully!");
+      setSuccessModalOpen(true);
     } catch (error) {
       console.error("Error updating profile:", error);
       alert(
@@ -98,9 +101,23 @@ export default function ProfilePage() {
     setSkills(skills.filter((s) => s !== skillToRemove));
   };
 
-
+  useEffect(()=>{
+    const fetchProfile = async () => {
+      const response = await apiClient<FormData>("/api/v1/profile", {
+        method: "GET",
+      });
+      if(response){
+        setHeadline(response.headline);
+        setBio(response.bio);
+        setSkills(response.skills.split(","));
+        console.log("Profile fetched successfully:", response);
+      }
+    
+    }
+    fetchProfile();
+  },[])
   return (
-    <div className="max-w-[960px] mx-auto py-12 md:py-16">
+    <div className="max-w-[960px] mx-auto py-8 sm:py-12 lg:py-16">
       {/* Header */}
       <div className="mb-12">
         <h1 className="text-3xl sm:text-4xl font-display font-bold text-(--on-surface) mb-3 tracking-tight">
@@ -153,7 +170,7 @@ export default function ProfilePage() {
           </div> */}
 
           {/* Professional Details */}
-          <div className="bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col gap-6">
+          <div className="bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col gap-6">
             {/* Professional Headline Input */}
             <div className="flex flex-col gap-2">
               <label className="text-[11px] font-bold tracking-widest uppercase text-(--on-surface-variant) flex items-center gap-2">
@@ -165,6 +182,8 @@ export default function ProfilePage() {
               <input
                 type="text"
                 {...register("headline")}
+                value={headline}
+                onChange={(e) => setHeadline(e.target.value)}
                 placeholder="e.g., Senior Frontend Engineer at Acme"
                 className="w-full bg-[#040813] border border-(--outline-variant)/30 rounded-lg px-4 py-3.5 text-sm text-(--on-surface) placeholder-(--on-surface-variant)/30 focus:outline-none focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) transition-all shadow-inner"
               />
@@ -182,6 +201,8 @@ export default function ProfilePage() {
               </label>
               <textarea
                 {...register("bio")}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
                 placeholder="Briefly describe your career journey, expertise, and what you're aiming for next..."
                 className="w-full flex-grow h-32 md:h-full min-h-[120px] resize-none bg-[#040813] border border-(--outline-variant)/30 rounded-lg px-4 py-3 text-sm text-(--on-surface) placeholder-(--on-surface-variant)/30 focus:outline-none focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) transition-all shadow-inner"
               ></textarea>
@@ -195,7 +216,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Skills & Technologies */}
-        <div className="bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
+        <div className="bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] mb-10">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-sm font-bold tracking-wide text-(--on-surface) mb-1">
@@ -269,6 +290,16 @@ export default function ProfilePage() {
       >
         Your photos couldn't be uploaded. Photos should be less than 4 MB and
         saved as JPG, PNG, GIF, TIFF, HEIF or WebP files.
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        isOpen={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        title="Profile Updated"
+      >
+        Your profile has been saved successfully. You can now continue to
+        prepare for your interviews.
       </Modal>
     </div>
   );

@@ -85,20 +85,20 @@ export default function AnalyzePage() {
   }
 
   return (
-    <div className="py-12 max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <div className="py-6 lg:py-12 max-w-6xl mx-auto px-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* Left Column: Forms */}
-        <div className="lg:col-span-7 space-y-10">
+        <div className="lg:col-span-7 space-y-8 lg:space-y-10">
           <header className="space-y-3">
-            <h1 className="font-display text-4xl font-bold tracking-tight text-(--on-surface)">
+            <h1 className="font-display text-3xl lg:text-4xl font-bold tracking-tight text-(--on-surface)">
               Apply for this Interview
             </h1>
-            <p className="text-(--on-surface-variant) text-lg">
+            <p className="text-(--on-surface-variant) text-base lg:text-lg">
               Upload your resume and job description to get your match analysis
             </p>
           </header>
 
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             {/* Upload Resume Section */}
             <div className="space-y-4">
               <label className="text-(--on-surface-variant) font-bold text-xs uppercase tracking-widest">
@@ -106,23 +106,23 @@ export default function AnalyzePage() {
               </label>
 
               {resumeUploaded ? (
-                <div className="p-6 rounded-xl bg-(--surface-container-low) border border-(--primary)/20 flex items-center justify-between group transition-all hover:bg-(--surface-container-high)">
+                <div className="p-4 lg:p-6 rounded-xl bg-(--surface-container-low) border border-(--primary)/20 flex items-center justify-between group transition-all hover:bg-(--surface-container-high)">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-(--surface-container-highest) flex items-center justify-center">
-                      <CheckCircle2 className="text-(--primary)" size={24} />
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-(--surface-container-highest) flex items-center justify-center">
+                      <CheckCircle2 className="text-(--primary)" size={20} />
                     </div>
-                    <div>
-                      <h4 className="font-medium text-(--on-surface)">
+                    <div className="min-w-0">
+                      <h4 className="font-medium text-(--on-surface) truncate max-w-[150px] sm:max-w-xs">
                         {resumeName}
                       </h4>
-                      <p className="text-xs text-(--primary) flex items-center gap-1">
-                        Resume uploaded successfully
+                      <p className="text-[10px] lg:text-xs text-(--primary) flex items-center gap-1">
+                        Uploaded successfully
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={() => setResumeUploaded(null)}
-                    className="text-xs font-bold text-(--primary) border-b border-(--primary)/30 hover:border-(--primary) transition-all"
+                    className="text-xs font-bold text-(--primary) border-b border-(--primary)/30 hover:border-(--primary) transition-all whitespace-nowrap"
                   >
                     Re-upload
                   </button>
@@ -144,31 +144,13 @@ export default function AnalyzePage() {
             {/* Upload Job Description Section */}
             <div className="space-y-4">
               <label className="text-(--on-surface-variant) font-bold text-xs uppercase tracking-widest">
-                Upload Job Description
+                Job Description
               </label>
-
-              {/* <div className="p-10 rounded-xl bg-(--surface-container-low) border-2 border-dashed border-(--outline-variant)/30 flex flex-col items-center justify-center gap-4 group cursor-pointer hover:border-(--primary)/50 transition-all">
-                <div className="w-14 h-14 rounded-full bg-(--surface-container-highest) flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FileText className="text-(--on-surface-variant)" size={24} />
-                </div>
-                <div className="text-center">
-                  <p className="text-(--on-surface) text-lg font-medium">
-                    Drop JD or paste text
-                  </p>
-                  <p className="text-sm text-(--on-surface-variant)">
-                    or{" "}
-                    <span className="text-(--primary) font-semibold">
-                      Browse
-                    </span>{" "}
-                    files
-                  </p>
-                </div>
-              </div> */}
 
               <div className="relative">
                 <textarea
-                  placeholder="Or paste the job description here..."
-                  className="w-full h-48 p-6 rounded-xl bg-(--surface-container-lowest) border border-(--outline-variant)/30 focus:border-(--primary)/50 focus:ring-1 focus:ring-(--primary)/20 outline-none resize-none transition-all placeholder:text-(--on-surface-variant)/50"
+                  placeholder="Paste the job description here..."
+                  className="w-full h-48 p-4 lg:p-6 rounded-xl bg-(--surface-container-lowest) border border-(--outline-variant)/30 focus:border-(--primary)/50 focus:ring-1 focus:ring-(--primary)/20 outline-none resize-none transition-all placeholder:text-(--on-surface-variant)/50 text-sm lg:text-base"
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                 />
@@ -200,82 +182,82 @@ export default function AnalyzePage() {
 
         {/* Right Column: Steps & Info */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="p-10 rounded-2xl bg-(--surface-container) border border-(--outline-variant)/5 relative overflow-hidden group">
+          <div className="p-6 lg:p-10 rounded-2xl bg-(--surface-container) border border-(--outline-variant)/5 relative overflow-hidden group">
             {/* Signature teal indicator */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-primary-gradient opacity-80" />
 
             {/* Subtle glow effect */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-(--primary) opacity-5 blur-[80px]" />
 
-            <h3 className="text-2xl font-display font-semibold mb-10 text-(--on-surface)">
+            <h3 className="text-xl lg:text-2xl font-display font-semibold mb-8 lg:mb-10 text-(--on-surface)">
               What happens next?
             </h3>
 
-            <div className="space-y-12 relative">
+            <div className="space-y-10 lg:space-y-12 relative">
               {/* Vertical Line */}
-              <div className="absolute left-[23px] top-6 bottom-6 w-[2px] bg-linear-to-b from-[#1d2539] via-[#2a3449] to-[#1d2539]" />
+              <div className="absolute left-[20px] lg:left-[23px] top-6 bottom-6 w-[2px] bg-linear-to-b from-[#1d2539] via-[#2a3449] to-[#1d2539]" />
 
               {/* Step 01 */}
-              <div className="flex gap-6 relative">
-                <div className="z-10 w-12 h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
-                  <Search className="text-(--primary)" size={20} />
+              <div className="flex gap-4 lg:gap-6 relative">
+                <div className="z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
+                  <Search className="text-(--primary)" size={18} />
                 </div>
                 <div className="space-y-1">
                   <span className="text-(--primary) font-bold text-[10px] tracking-widest uppercase">
                     Step 01
                   </span>
-                  <p className="text-(--on-surface) font-medium leading-relaxed">
+                  <p className="text-(--on-surface) font-medium text-sm lg:text-base leading-relaxed">
                     We parse your resume and extract your experience
                   </p>
                 </div>
               </div>
 
               {/* Step 02 */}
-              <div className="flex gap-6 relative">
-                <div className="z-10 w-12 h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
-                  <BarChart3 className="text-(--primary)" size={20} />
+              <div className="flex gap-4 lg:gap-6 relative">
+                <div className="z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
+                  <BarChart3 className="text-(--primary)" size={18} />
                 </div>
                 <div className="space-y-1">
                   <span className="text-(--primary) font-bold text-[10px] tracking-widest uppercase">
                     Step 02
                   </span>
-                  <p className="text-(--on-surface) font-medium leading-relaxed">
+                  <p className="text-(--on-surface) font-medium text-sm lg:text-base leading-relaxed">
                     We score your profile against the job description
                   </p>
                 </div>
               </div>
 
               {/* Step 03 */}
-              <div className="flex gap-6 relative">
-                <div className="z-10 w-12 h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
-                  <Target className="text-(--primary)" size={20} />
+              <div className="flex gap-4 lg:gap-6 relative">
+                <div className="z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-(--surface-container-highest) border border-(--outline-variant)/20 flex items-center justify-center shrink-0">
+                  <Target className="text-(--primary)" size={18} />
                 </div>
                 <div className="space-y-1">
                   <span className="text-(--primary) font-bold text-[10px] tracking-widest uppercase">
                     Step 03
                   </span>
-                  <p className="text-(--on-surface) font-medium leading-relaxed">
+                  <p className="text-(--on-surface) font-medium text-sm lg:text-base leading-relaxed">
                     You see your match report before the interview starts
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-(--outline-variant)/10 flex items-center gap-3 text-xs text-(--on-surface-variant)">
+            <div className="mt-10 lg:mt-12 pt-6 lg:pt-8 border-t border-(--outline-variant)/10 flex items-center gap-3 text-xs text-(--on-surface-variant)">
               <ShieldCheck size={16} className="text-(--primary)" />
               Your data is never stored or shared
             </div>
           </div>
 
-          <div className="p-6 rounded-xl bg-(--surface-container-low) border border-(--outline-variant)/10 flex items-center gap-5">
-            <div className="w-14 h-14 rounded-xl bg-(--surface-container-highest) flex items-center justify-center shrink-0 border border-(--outline-variant)/20 shadow-inner">
-              <Cpu className="text-(--primary)" size={24} />
+          <div className="p-4 lg:p-6 rounded-xl bg-(--surface-container-low) border border-(--outline-variant)/10 flex items-center gap-4 lg:gap-5">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-xl bg-(--surface-container-highest) flex items-center justify-center shrink-0 border border-(--outline-variant)/20 shadow-inner">
+              <Cpu className="text-(--primary)" size={20} />
             </div>
             <div>
               <h5 className="text-(--primary) font-bold text-[10px] tracking-widest uppercase">
                 AI Readiness
               </h5>
-              <p className="text-sm text-(--on-surface-variant) leading-tight mt-1">
+              <p className="text-xs lg:text-sm text-(--on-surface-variant) leading-tight mt-1">
                 Matching technology powered by neural parsing models.
               </p>
             </div>
@@ -283,9 +265,9 @@ export default function AnalyzePage() {
         </div>
       </div>
 
-      <footer className="mt-20 py-8 border-t border-(--outline-variant)/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-(--on-surface-variant)">
+      <footer className="mt-12 lg:mt-20 py-8 border-t border-(--outline-variant)/10 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-(--on-surface-variant)">
         <div>© 2024 INTERVIEW.AI — Professional Interview Intelligence</div>
-        <div className="flex gap-8">
+        <div className="flex flex-wrap justify-center gap-4 lg:gap-8">
           <Link
             href="/privacy"
             className="hover:text-(--on-surface) transition-colors"

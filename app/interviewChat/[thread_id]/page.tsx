@@ -188,20 +188,20 @@ export default function InterviewChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-(--surface) text-(--on-surface) font-body overflow-hidden dot-grid">
+    <div className="flex flex-col h-[100dvh] bg-(--surface) text-(--on-surface) font-body overflow-hidden dot-grid">
       {/* Header */}
-      <header className="h-[72px] border-b border-(--outline-variant)/10 flex items-center justify-between px-8 shrink-0 bg-(--surface)/80 backdrop-blur-md z-50">
+      <header className="h-[64px] lg:h-[72px] border-b border-(--outline-variant)/10 flex items-center justify-between px-4 lg:px-8 shrink-0 bg-(--surface)/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-(--surface-container-highest) rounded-lg flex items-center justify-center group-hover:bg-(--surface-bright) transition-colors">
+            <div className="w-8 h-8 lg:w-9 lg:h-9 bg-(--surface-container-highest) rounded-lg flex items-center justify-center group-hover:bg-(--surface-bright) transition-colors">
               <Zap
                 className="text-(--primary)"
-                size={18}
+                size={16}
                 fill="currentColor"
                 fillOpacity={0.2}
               />
             </div>
-            <span className="font-display font-bold text-lg tracking-tight">
+            <span className="font-display font-bold text-base lg:text-lg tracking-tight hidden sm:inline">
               Interview
               <span className="font-medium text-(--on-surface-variant)">
                 IQ
@@ -210,151 +210,110 @@ export default function InterviewChatPage() {
           </Link>
         </div>
 
-        <div className="flex flex-col items-center">
-          <h1 className="text-sm font-display font-bold tracking-wide">
-            Software Engineer @ Google — Round 1
+        <div className="flex flex-col items-center flex-1 mx-2 min-w-0">
+          <h1 className="text-xs lg:text-sm font-display font-bold tracking-wide truncate max-w-full">
+            Software Engineer <span className="hidden sm:inline">@ Google — Round 1</span>
           </h1>
-          <span className="text-[10px] font-bold text-(--on-surface-variant) uppercase tracking-[0.2em] mt-0.5">
+          <span className="text-[9px] lg:text-[10px] font-bold text-(--on-surface-variant) uppercase tracking-[0.2em] mt-0.5 whitespace-nowrap">
             Live Simulation
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-(--surface-container-low) px-4 py-2 rounded-xl border border-(--outline-variant)/10">
+        <div className="flex items-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-2 bg-(--surface-container-low) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--outline-variant)/10">
             <Timer size={14} className="text-(--error)" />
-            <span className="text-sm font-bold font-mono tracking-wider text-(--on-surface)">
+            <span className="text-xs lg:text-sm font-bold font-mono tracking-wider text-(--on-surface)">
               {timer}
             </span>
           </div>
-          <button className="flex items-center gap-2 bg-(--error)/10 hover:bg-(--error)/20 text-(--error) px-4 py-2 rounded-xl border border-(--error)/20 transition-all font-bold text-sm">
+          <button className="flex items-center gap-2 bg-(--error)/10 hover:bg-(--error)/20 text-(--error) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--error)/20 transition-all font-bold text-xs lg:text-sm">
             <LogOut size={16} />
-            End Interview
+            <span className="hidden sm:inline">End Interview</span>
           </button>
         </div>
       </header>
 
       {/* Main Content Split */}
-      <main className="flex-1 flex flex-row  overflow-hidden relative">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Video Feeds Section */}
-
-        <section className="grid grid-rows-2 grid-cols-1 gap-6 p-6 w-2/5">
+        <section className="hidden sm:flex sm:flex-row lg:flex-col lg:w-2/5 gap-3 lg:gap-6 p-4 lg:p-6 shrink-0 h-[200px] lg:h-auto overflow-x-auto lg:overflow-y-auto no-scrollbar ">
           {/* AI Interviewer */}
-          <div className="relative group rounded-2xl overflow-hidden bg-(--surface-container-lowest) border border-(--outline-variant)/10  flex items-center justify-center">
-            {/* Background Grid/Effect */}
+          <div className="relative group rounded-2xl overflow-hidden bg-(--surface-container-lowest) border border-(--outline-variant)/10 flex-1 flex items-center justify-center min-w-[200px] lg:min-w-0 lg:h-[calc(50%-12px)]">
             <div className="absolute inset-0 dot-grid opacity-30" />
-
-            {/* AI Avatar Central */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-(--surface-container-highest) flex items-center justify-center relative z-10 border border-(--primary)/20 shadow-[0_0_50px_rgba(106,242,222,0.15)] animate-pulse">
-                <Bot size={40} className="text-(--primary)" />
+              <div className="w-16 h-16 lg:w-24 lg:h-24 rounded-full bg-(--surface-container-highest) flex items-center justify-center relative z-10 border border-(--primary)/20 shadow-[0_0_50px_rgba(106,242,222,0.15)] animate-pulse">
+                <Bot size={28} className="text-(--primary) lg:size-[40px]" />
               </div>
-              {/* Outer Glows */}
               <div className="absolute inset-0 bg-(--primary) opacity-20 blur-3xl rounded-full scale-150 animate-pulse" />
             </div>
 
-            {/* Badge */}
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/5">
-              <div className="w-2 h-2 rounded-full bg-(--primary) animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+            <div className="absolute bottom-3 lg:bottom-4 left-3 lg:left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-2 lg:px-3 py-1 rounded-lg border border-white/5">
+              <div className="w-1.5 h-1.5 rounded-full bg-(--primary) animate-pulse" />
+              <span className="text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
                 AI Interviewer
               </span>
             </div>
 
-            {/* Audio Indicator */}
-            <div className="absolute bottom-4 right-4 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
-              <Volume2 size={14} className="text-(--on-surface-variant)" />
+            <div className="absolute bottom-3 lg:bottom-4 right-3 lg:right-4 w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+              <Volume2 size={12} className="text-(--on-surface-variant) lg:size-[14px]" />
             </div>
           </div>
 
-          {/* User Video (Fallback/Placeholder) */}
-          <div className="relative group rounded-2xl overflow-hidden bg-(--surface-container-lowest) border border-(--outline-variant)/10 flex items-center justify-center">
-            {/* AI Avatar Central */}
-            <div className="w-20 h-20 rounded-full bg-(--surface-container-highest) flex items-center justify-center border border-(--outline-variant)/10">
-              <User size={36} className="text-(--on-surface-variant)" />
+          {/* User Video Placeholder */}
+          <div className="relative group rounded-2xl overflow-hidden bg-(--surface-container-lowest) border border-(--outline-variant)/10 flex-1 flex items-center justify-center min-w-[200px] lg:min-w-0 lg:h-[calc(50%-12px)]">
+            <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-(--surface-container-highest) flex items-center justify-center border border-(--outline-variant)/10">
+              <User size={28} className="text-(--on-surface-variant) lg:size-[36px]" />
             </div>
-
-            {/* Badge */}
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+            <div className="absolute bottom-3 lg:bottom-4 left-3 lg:left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-2 lg:px-3 py-1 rounded-lg border border-white/5">
+              <span className="text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
                 You
               </span>
             </div>
-
-            {/* Analysis Overlay */}
-            {/* <div className="absolute bottom-4 right-4 w-44 glass-panel border border-(--outline-variant)/20 rounded-xl p-4 space-y-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[9px] font-bold text-(--on-surface-variant) uppercase tracking-widest">
-                  Live Analysis
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-[10px] font-bold">
-                    <span>Pacing</span>
-                    <span className="text-(--primary)">Excellent</span>
-                  </div>
-                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary-gradient w-[85%]" />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-[10px] font-bold">
-                    <span>Clarity</span>
-                    <span className="text-(--secondary)">Good</span>
-                  </div>
-                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-(--secondary) w-[70%]" />
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </div>
         </section>
-        <div>
+
+        {/* Chat Section Wrapper */}
+        <div className="flex-1 flex flex-col min-h-0 min-w-0 lg:border-l border-(--outline-variant)/10">
           {/* Chat History Section */}
           <section
             ref={scrollRef}
-            className="flex-1 h-[80%] overflow-y-auto px-12 py-8 space-y-10 scroll-smooth"
+            className="flex-1 overflow-y-auto px-4 lg:px-12 py-4 lg:py-8 space-y-6 lg:space-y-10 scroll-smooth"
           >
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex items-start gap-4 ${
+                className={`flex items-start gap-3 lg:gap-4 ${
                   msg.sender === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-                {/* Avatar */}
                 <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-(--outline-variant)/10 ${
+                  className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center shrink-0 border border-(--outline-variant)/10 ${
                     msg.sender === "ai"
                       ? "bg-(--surface-container-highest)"
                       : "bg-(--surface-container-low)"
                   }`}
                 >
                   {msg.sender === "ai" ? (
-                    <Bot size={16} className="text-(--primary)" />
+                    <Bot size={14} className="text-(--primary) lg:size-[16px]" />
                   ) : (
-                    <User size={16} className="text-(--on-surface-variant)" />
+                    <User size={14} className="text-(--on-surface-variant) lg:size-[16px]" />
                   )}
                 </div>
 
-                {/* Message Bubble */}
                 <div
-                  className={`flex flex-col gap-2 max-w-[60%] ${
+                  className={`flex flex-col gap-2 max-w-[85%] lg:max-w-[70%] ${
                     msg.sender === "user" ? "items-end" : "items-start"
                   }`}
                 >
                   <div
-                    className={`relative p-5 rounded-2xl text-sm leading-relaxed ${
+                    className={`relative p-3.5 lg:p-5 rounded-2xl text-sm leading-relaxed ${
                       msg.sender === "user"
                         ? "bg-white text-black font-medium rounded-tr-none"
                         : "bg-(--surface-container) text-(--on-surface) border border-(--outline-variant)/5 rounded-tl-none"
                     }`}
                   >
                     {msg.type === "follow-up" && (
-                      <div className="mb-3">
+                      <div className="mb-2 lg:mb-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-(--primary)/10 text-(--primary) text-[9px] font-bold uppercase tracking-wider border border-(--primary)/20">
                           Follow-up
                         </span>
@@ -363,7 +322,7 @@ export default function InterviewChatPage() {
                     {msg.text}
                   </div>
 
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-(--on-surface-variant) uppercase tracking-widest px-1">
+                  <div className="flex items-center gap-2 text-[9px] lg:text-[10px] font-bold text-(--on-surface-variant) uppercase tracking-widest px-1">
                     <span>
                       {msg.sender === "ai" ? "AI Interviewer" : "You"}
                     </span>
@@ -376,10 +335,10 @@ export default function InterviewChatPage() {
           </section>
 
           {/* Input Area */}
-          <section className="p-8 pt-0">
+          <section className="p-4 lg:p-8 pt-0 shrink-0">
             <div className="relative group max-w-5xl mx-auto">
-              <div className="flex items-center gap-4 bg-(--surface-container-lowest) border border-(--outline-variant)/20 rounded-2xl p-2.5 focus-within:border-(--primary)/50 focus-within:ring-1 focus-within:ring-(--primary)/20 transition-all shadow-2xl">
-                <div className="flex-1 px-4">
+              <div className="flex items-center gap-2 lg:gap-4 bg-(--surface-container-lowest) border border-(--outline-variant)/20 rounded-2xl p-1.5 lg:p-2.5 focus-within:border-(--primary)/50 focus-within:ring-1 focus-within:ring-(--primary)/20 transition-all shadow-xl lg:shadow-2xl">
+                <div className="flex-1 px-2 lg:px-4">
                   <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -390,28 +349,28 @@ export default function InterviewChatPage() {
                       }
                     }}
                     placeholder="Type your answer..."
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 resize-none max-h-32 min-h-[44px] placeholder:text-(--on-surface-variant)/50"
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2.5 lg:py-3 resize-none max-h-32 min-h-[40px] placeholder:text-(--on-surface-variant)/50"
                     rows={1}
                   />
                 </div>
 
-                <div className="flex items-center gap-3 pr-2">
-                  <button className="p-2 text-(--on-surface-variant) hover:text-(--on-surface) transition-colors hover:bg-white/5 rounded-xl">
-                    <FileText size={20} />
+                <div className="flex items-center gap-2 lg:gap-3 pr-1 lg:pr-2">
+                  <button className="hidden sm:flex p-2 text-(--on-surface-variant) hover:text-(--on-surface) transition-colors hover:bg-white/5 rounded-xl">
+                    <FileText size={18} className="lg:size-[20px]" />
                   </button>
                   <button
                     onClick={handleSend}
                     disabled={!input.trim()}
-                    className="p-3 bg-primary-gradient text-(--surface) rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-lg shadow-(--primary)/10"
+                    className="p-2.5 lg:p-3 bg-primary-gradient text-(--surface) rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-lg shadow-(--primary)/10 shrink-0"
                   >
-                    <SendHorizontal size={20} />
+                    <SendHorizontal size={18} className="lg:size-[20px]" />
                   </button>
                 </div>
               </div>
 
-              {/* Hint text - Positioned below the input */}
-              <div className="mt-4 flex justify-center items-center gap-1.5 opacity-40">
-                <span className="text-[10px] font-medium tracking-wide">
+              {/* Hint text */}
+              <div className="mt-3 lg:mt-4 flex justify-center items-center gap-1.5 opacity-40">
+                <span className="text-[9px] lg:text-[10px] font-medium tracking-wide">
                   Press Enter to send, Shift + Enter for new line
                 </span>
               </div>

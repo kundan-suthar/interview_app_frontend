@@ -61,7 +61,7 @@ export default function LoginPage() {
       </div>
 
       {/* Login Card */}
-      <div className="w-full max-w-[440px] bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-8 sm:p-10 shadow-lg relative">
+      <div className="w-full max-w-[440px] bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-6 sm:p-10 shadow-lg relative">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-display font-bold text-(--on-surface) mb-2">
             Ace your next interview

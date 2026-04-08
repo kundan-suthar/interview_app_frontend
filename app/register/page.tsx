@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 const schema = z
   .object({
     email: z.string().email("Invalid email"),
@@ -40,6 +40,7 @@ export default function RegisterPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const router = useRouter();
   const onSubmit = async (data: FormData) => {
     setServerError(null);
     const { confirmPassword, ...rest } = data;
@@ -62,6 +63,7 @@ export default function RegisterPage() {
       });
       if (res.status === 201) {
         reset();
+        router.push("/dashboard/profile")
       } else if (res.status === 400) {
         const error = await res.json(); // 👈 await
         setServerError(error.detail);
@@ -95,7 +97,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Register Card */}
-      <div className="w-full max-w-[440px] bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-8 shadow-xl relative">
+      <div className="w-full max-w-[440px] bg-(--surface-container-high) border border-(--outline-variant)/20 rounded-2xl p-6 sm:p-8 shadow-xl relative">
         {/*server error response*/}
         {serverError && <div className="text-error">{serverError}</div>}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
