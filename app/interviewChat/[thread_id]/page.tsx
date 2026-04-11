@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
 import { useParams } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 interface Message {
   id: string;
@@ -31,27 +32,7 @@ export default function InterviewChatPage() {
   const [timer, setTimer] = useState("12:34");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { thread_id } = useParams();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "ai",
-      text: "Tell me about a challenging project you've led recently. What was the core problem and how did you approach it?",
-      timestamp: "12:30",
-    },
-    {
-      id: "2",
-      sender: "user",
-      text: "Sure! At my last role, I led a migration from monolith to microservices. The main challenge was maintaining 99.9% uptime while decoupling three core data domains that were tightly integrated at the database level.",
-      timestamp: "12:32",
-    },
-    {
-      id: "3",
-      sender: "ai",
-      text: "Interesting. What was the biggest technical challenge during that decoupling phase, and how did you handle data consistency?",
-      timestamp: "12:34",
-      type: "follow-up",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -115,24 +96,82 @@ export default function InterviewChatPage() {
   //   setMessages([...messages, newMessage]);
   //   setInput("");
   // };
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const readChatStream = async (query: string, aiId: string) => {
+    const { accessToken } = useAuthStore.getState();
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(query)}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
 
+      const reader = res.body?.getReader();
+      if (!reader) return;
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Append new chunk to buffer and split by SSE message delimiter
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() || "";
+
+        for (const part of parts) {
+          if (!part.trim()) continue;
+
+          const lines = part.split("\n");
+          let eventType = "";
+          let data = "";
+
+          for (const line of lines) {
+            if (line.startsWith("event: ")) {
+              eventType = line.slice(7).trim();
+            } else if (line.startsWith("data: ")) {
+              data = line.slice(6);
+            }
+          }
+
+          // If it's a 'token' event, append data to the current AI message
+          if (eventType === "token" && data) {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === aiId ? { ...msg, text: msg.text + data } : msg
+              )
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  };
+
+  const handleSend = async (query: string) => {
+    if (!query.trim()) return;
+
+    const currentInput = query;
+    setInput("");
+
+    // Add user message to UI immediately
     const userMessage: Message = {
       id: Date.now().toString(),
       sender: "user",
-      text: input,
+      text: currentInput,
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     };
-
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
 
+    // Prepare a placeholder for the AI streaming response
     const aiMessageId = (Date.now() + 1).toString();
-
     setMessages((prev) => [
       ...prev,
       {
@@ -146,46 +185,42 @@ export default function InterviewChatPage() {
       },
     ]);
 
-    // ❗ SSE connection
-    const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(
-        input,
-      )}`,
-    );
-
-    // 🔹 Token stream
-    eventSource.addEventListener("token", (event) => {
-      const token = event.data;
-
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMessageId ? { ...msg, text: msg.text + token } : msg,
-        ),
-      );
-    });
-
-    // 🔹 Time updates
-    eventSource.addEventListener("time", (event) => {
-      const timeData = JSON.parse(event.data);
-      console.log("time:", timeData);
-    });
-
-    // 🔹 Status updates
-    eventSource.addEventListener("status", (event) => {
-      const status = JSON.parse(event.data);
-      console.log("status:", status);
-    });
-
-    // 🔹 Done event
-    eventSource.addEventListener("done", () => {
-      eventSource.close();
-    });
-
-    // 🔹 Error handling
-    eventSource.onerror = () => {
-      eventSource.close();
-    };
+    await readChatStream(currentInput, aiMessageId);
   };
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    const getFirstMessage = async () => {
+      const aiMessageId = Date.now().toString();
+
+      // Add a placeholder for the first AI message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: aiMessageId,
+          sender: "ai",
+          text: "",
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+
+      // Trigger the stream for the initial greeting
+      await readChatStream("Hello", aiMessageId);
+
+    };
+
+    if (thread_id) {
+      getFirstMessage();
+    }
+
+
+  }, [thread_id]);
 
   return (
     <div className="flex flex-col h-[100dvh] bg-(--surface) text-(--on-surface) font-body overflow-hidden dot-grid">
@@ -282,16 +317,14 @@ export default function InterviewChatPage() {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex items-start gap-3 lg:gap-4 ${
-                  msg.sender === "user" ? "flex-row-reverse" : "flex-row"
-                }`}
+                className={`flex items-start gap-3 lg:gap-4 ${msg.sender === "user" ? "flex-row-reverse" : "flex-row"
+                  }`}
               >
                 <div
-                  className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center shrink-0 border border-(--outline-variant)/10 ${
-                    msg.sender === "ai"
-                      ? "bg-(--surface-container-highest)"
-                      : "bg-(--surface-container-low)"
-                  }`}
+                  className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center shrink-0 border border-(--outline-variant)/10 ${msg.sender === "ai"
+                    ? "bg-(--surface-container-highest)"
+                    : "bg-(--surface-container-low)"
+                    }`}
                 >
                   {msg.sender === "ai" ? (
                     <Bot size={14} className="text-(--primary) lg:size-[16px]" />
@@ -301,16 +334,14 @@ export default function InterviewChatPage() {
                 </div>
 
                 <div
-                  className={`flex flex-col gap-2 max-w-[85%] lg:max-w-[70%] ${
-                    msg.sender === "user" ? "items-end" : "items-start"
-                  }`}
+                  className={`flex flex-col gap-2 max-w-[85%] lg:max-w-[70%] ${msg.sender === "user" ? "items-end" : "items-start"
+                    }`}
                 >
                   <div
-                    className={`relative p-3.5 lg:p-5 rounded-2xl text-sm leading-relaxed ${
-                      msg.sender === "user"
-                        ? "bg-white text-black font-medium rounded-tr-none"
-                        : "bg-(--surface-container) text-(--on-surface) border border-(--outline-variant)/5 rounded-tl-none"
-                    }`}
+                    className={`relative p-3.5 lg:p-5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.sender === "user"
+                      ? "bg-white text-black font-medium rounded-tr-none"
+                      : "bg-(--surface-container) text-(--on-surface) border border-(--outline-variant)/5 rounded-tl-none"
+                      }`}
                   >
                     {msg.type === "follow-up" && (
                       <div className="mb-2 lg:mb-3">
@@ -345,7 +376,7 @@ export default function InterviewChatPage() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        handleSend();
+                        handleSend(input);
                       }
                     }}
                     placeholder="Type your answer..."
@@ -359,7 +390,7 @@ export default function InterviewChatPage() {
                     <FileText size={18} className="lg:size-[20px]" />
                   </button>
                   <button
-                    onClick={handleSend}
+                    onClick={() => handleSend(input)}
                     disabled={!input.trim()}
                     className="p-2.5 lg:p-3 bg-primary-gradient text-(--surface) rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-lg shadow-(--primary)/10 shrink-0"
                   >

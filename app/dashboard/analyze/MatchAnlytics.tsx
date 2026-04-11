@@ -77,6 +77,7 @@ export default function MatchAnalytics({
       console.log("response", response);
     } catch (error) {
       console.log("error", error);
+
     } finally {
       setLoading(false);
     }

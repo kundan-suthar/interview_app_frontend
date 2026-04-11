@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
 import { authApi } from "./auth";
-
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -20,6 +19,7 @@ export async function apiClient<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const { accessToken, setAccessToken, clear } = useAuthStore.getState();
+  
 
   const headers = new Headers(options.headers);
   if (accessToken) {
@@ -31,11 +31,16 @@ export async function apiClient<T>(
 
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+  try {
+  
+    
   let response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers,
     credentials: "include",
   });
+  
+  
 
   if (response.status === 401) {
     if (isRefreshing) {
@@ -64,15 +69,20 @@ export async function apiClient<T>(
       processQueue(null, newToken);
 
       headers.set("Authorization", `Bearer ${newToken}`);
-      response = await fetch(`${BASE_URL}${endpoint}`, {
-        ...options,
-        headers,
-        credentials: "include",
-      });
+      try {
+        response = await fetch(`${BASE_URL}${endpoint}`, {
+          ...options,
+          headers,
+          credentials: "include",
+        });
+      } catch (error) {
+        
+      }
     } catch (err) {
       processQueue(err, null);
       clear();
       window.location.href = "/login";
+    
       throw err;
     } finally {
       isRefreshing = false;
@@ -80,9 +90,21 @@ export async function apiClient<T>(
   }
 
   if (!response.ok) {
+    const errorData = await response.json();
+
+    if (response.status === 403 && errorData.detail.detail === "PROFILE_INCOMPLETE") {
+      // redirect globally
+      window.location.href = "/dashboard/profile";
+    }
+
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || "Request failed");
+    throw new Error(errorData.detail || "Something went wrong");
+    
+  }
+  return response.json();
+  } catch (error) {
+    console.log("errorrrrrrrrrrrrr", error);
+    
   }
 
-  return response.json();
 }

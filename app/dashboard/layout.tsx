@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "./components/Sidebar";
 import { Bell, HelpCircle, Plus } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
@@ -15,18 +15,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const path = usePathname()
   const [userDetails, setUserDetails] = useState<User>({full_name:"", email:""});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const getUserDetails = async () => {
     try {
-      const res = await apiClient("/api/v1/users/me");
-       const parsed = UserSchema.safeParse(res);
-        if (!parsed.success) {
-        console.error("Validation error:", parsed.error);
-        return;
-      }
-      res && setUserDetails(parsed.data)
+      const res = await apiClient<User>("/api/v1/users/me");
+      //  const parsed = UserSchema.safeParse(res);
+      //   if (!parsed.success) {
+      //   console.error("Validation error:", parsed.error);
+      //   return;
+      // }
+      res && setUserDetails(res)
     } catch (error) {
       console.log(error);
     }
@@ -34,7 +35,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     getUserDetails();
-  }, []);
+  }, [path]);
 
   return (
     <div className="flex h-screen bg-(--surface) text-(--on-surface) dot-grid overflow-hidden">

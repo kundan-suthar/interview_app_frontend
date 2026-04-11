@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [bio, setBio] = useState("");
   const [headline, setHeadline] = useState("");
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorModalOpen(false);
@@ -103,14 +104,25 @@ export default function ProfilePage() {
 
   useEffect(()=>{
     const fetchProfile = async () => {
-      const response = await apiClient<FormData>("/api/v1/profile", {
-        method: "GET",
-      });
-      if(response){
-        setHeadline(response.headline);
-        setBio(response.bio);
-        setSkills(response.skills.split(","));
-        console.log("Profile fetched successfully:", response);
+      try {
+        const response = await apiClient<any>("/api/v1/profile", {
+          method: "GET",
+        });
+        if(response){
+          if (!response.isProfileCreated) {
+            setShowProfileModal(true);
+            return;
+          }
+          setHeadline(response.headline);
+          setBio(response.bio);
+          setSkills(response.skills.split(","));
+          console.log("Profile fetched successfully:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        alert(
+          error instanceof Error ? error.message : "Failed to fetch profile",
+        );
       }
     
     }
@@ -300,6 +312,16 @@ export default function ProfilePage() {
       >
         Your profile has been saved successfully. You can now continue to
         prepare for your interviews.
+      </Modal>
+
+      {/* Profile Completion Modal */}
+      <Modal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        title="Complete Your Profile"
+      >
+        To get started with AI-powered interviews, please complete your profile. 
+        This helps us tailor the experience to your background and expertise.
       </Modal>
     </div>
   );
