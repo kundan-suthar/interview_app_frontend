@@ -15,9 +15,10 @@ import {
   MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
-import { apiClient } from "@/lib/api/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import CountDown from "./CountDown";
+import Modal from "../../components/Modal";
 
 interface Message {
   id: string;
@@ -29,10 +30,11 @@ interface Message {
 
 export default function InterviewChatPage() {
   const [input, setInput] = useState("");
-  const [timer, setTimer] = useState("12:34");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { thread_id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -40,62 +42,13 @@ export default function InterviewChatPage() {
     }
   }, [messages]);
 
-  // useEffect(() => {
-  //   const payload = {
-  //     user_message: "hello",
-  //   };
-  //   const fetchInterviewSession = async () => {
-  //     try {
-  //       const response = await apiClient(
-  //         `/api/v1/interview/chat/?session_id=${thread_id}`,
-  //         {
-  //           method: "POST",
-  //           body: JSON.stringify(payload),
-  //         },
-  //       );
-  //       console.log(response);
-  //       const reader = response?.body?.getReader();
-  //       const decoder = new TextDecoder("utf-8");
+  const onComplete = () => {
+    setIsModalOpen(true);
+    setTimeout(() => {
+      router.push("/dashboard/conclusion");
+    }, 4000);
+  };
 
-  //       if (!reader) return;
-
-  //       let done = false;
-
-  //       while (!done) {
-  //         const { value, done: doneReading } = await reader.read();
-  //         done = doneReading;
-
-  //         const chunk = decoder.decode(value);
-
-  //         // 🔥 Append chunk to last AI message
-  //         setMessages((prev) =>
-  //           prev.map((msg) =>
-  //             msg.id === aiMessageId
-  //               ? { ...msg, text: msg.text + chunk }
-  //               : msg
-  //           )
-  //         );
-  //     } catch (error) {
-  //       console.log("error", error);
-  //     }
-  //   };
-  //   fetchInterviewSession();
-  // }, [thread_id]);
-
-  // const handleSend = () => {
-  //   if (!input.trim()) return;
-  //   const newMessage: Message = {
-  //     id: Date.now().toString(),
-  //     sender: "user",
-  //     text: input,
-  //     timestamp: new Date().toLocaleTimeString([], {
-  //       hour: "2-digit",
-  //       minute: "2-digit",
-  //     }),
-  //   };
-  //   setMessages([...messages, newMessage]);
-  //   setInput("");
-  // };
   const readChatStream = async (query: string, aiId: string) => {
     const { accessToken } = useAuthStore.getState();
     try {
@@ -106,6 +59,15 @@ export default function InterviewChatPage() {
           'Content-Type': 'application/json'
         },
       });
+
+      // const res = await apiClient<any>(`/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(query)}`, {
+      //   method: "POST",
+      //   body: new URLSearchParams({
+      //     session_id: thread_id as string,
+      //     user_message: query,
+      //   }),
+      // });
+
 
       const reader = res.body?.getReader();
       if (!reader) return;
@@ -187,8 +149,8 @@ export default function InterviewChatPage() {
 
     await readChatStream(currentInput, aiMessageId);
   };
-  const hasRun = useRef(false);
 
+  const hasRun = useRef(false);
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
@@ -245,20 +207,20 @@ export default function InterviewChatPage() {
           </Link>
         </div>
 
-        <div className="flex flex-col items-center flex-1 mx-2 min-w-0">
+        {/* <div className="flex flex-col items-center flex-1 mx-2 min-w-0">
           <h1 className="text-xs lg:text-sm font-display font-bold tracking-wide truncate max-w-full">
             Software Engineer <span className="hidden sm:inline">@ Google — Round 1</span>
           </h1>
           <span className="text-[9px] lg:text-[10px] font-bold text-(--on-surface-variant) uppercase tracking-[0.2em] mt-0.5 whitespace-nowrap">
             Live Simulation
           </span>
-        </div>
+        </div> */}
 
         <div className="flex items-center gap-2 lg:gap-4">
           <div className="flex items-center gap-2 bg-(--surface-container-low) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--outline-variant)/10">
             <Timer size={14} className="text-(--error)" />
             <span className="text-xs lg:text-sm font-bold font-mono tracking-wider text-(--on-surface)">
-              {timer}
+              <CountDown initialMinutes={2} onComplete={onComplete} />
             </span>
           </div>
           <button className="flex items-center gap-2 bg-(--error)/10 hover:bg-(--error)/20 text-(--error) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--error)/20 transition-all font-bold text-xs lg:text-sm">
@@ -409,6 +371,24 @@ export default function InterviewChatPage() {
           </section>
         </div>
       </main>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Interview Complete"
+      >
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="w-12 h-12 rounded-full bg-(--primary)/20 flex items-center justify-center animate-pulse">
+            <Zap className="text-(--primary)" size={24} />
+          </div>
+          <p className="text-center text-lg font-medium text-(--on-surface)">
+            The interview has ended. We are now concluding your result...
+          </p>
+          <p className="text-sm text-(--on-surface-variant)">
+            Redirecting to your dashboard.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 }

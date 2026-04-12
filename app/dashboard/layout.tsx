@@ -16,7 +16,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const path = usePathname()
-  const [userDetails, setUserDetails] = useState<User>({full_name:"", email:""});
+  const [userDetails, setUserDetails] = useState<User>({ full_name: "", email: "" });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const getUserDetails = async () => {
@@ -40,10 +40,10 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-(--surface) text-(--on-surface) dot-grid overflow-hidden">
       {/* Sidebar */}
-      <Sidebar 
-        userDetails={userDetails} 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <Sidebar
+        userDetails={userDetails}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -57,15 +57,15 @@ export default function DashboardLayout({
               className="lg:hidden p-2 text-(--on-surface-variant) hover:text-(--on-surface) hover:bg-(--surface-container-high) rounded-xl transition-colors"
             >
               <Bell size={20} className="hidden" /> {/* Placeholder to show we have icons */}
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
                 strokeLinejoin="round"
               >
                 <line x1="4" x2="20" y1="12" y2="12" />
@@ -86,16 +86,18 @@ export default function DashboardLayout({
             <div className="hidden lg:block h-8 w-px bg-(--outline-variant)/20 mx-2"></div>
 
             <div className="flex items-center">
-              <button
-                onClick={() => {
-                  router.push("/dashboard/analyze");
-                }}
-                className="bg-primary-gradient text-(--surface) font-bold px-4 lg:px-6 py-2 lg:py-2.5 rounded-xl flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-(--primary)/10 text-sm lg:text-base"
-              >
-                <Plus size={18} strokeWidth={3} />
-                <span className="hidden sm:inline">New Interview</span>
-                <span className="sm:hidden">New</span>
-              </button>
+              {path !== "/dashboard/analyze" && (
+                <button
+                  onClick={() => {
+                    router.push("/dashboard/analyze");
+                  }}
+                  className="bg-primary-gradient text-(--surface) font-bold px-4 lg:px-6 py-2 lg:py-2.5 rounded-xl flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-(--primary)/10 text-sm lg:text-base hover:cursor-pointer"
+                >
+                  <Plus size={18} strokeWidth={3} />
+                  <span className="hidden sm:inline">New Interview</span>
+                  <span className="sm:hidden">New</span>
+                </button>
+              )}
             </div>
           </div>
         </header>
