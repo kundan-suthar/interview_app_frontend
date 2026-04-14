@@ -15,6 +15,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
+  console.log("hihdhd");
+  
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -29,6 +31,8 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setServerError(null);
     const formData = new FormData();
+    console.log("jfhkhgj");
+    
     formData.append("username", data.email);
     formData.append("password", data.password);
 
@@ -48,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="min-dvh-screen flex flex-col items-center justify-center p-4 bg-(--surface) relative isolate">
       {/* Background ambient light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-(--primary) opacity-[0.03] blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-100vw h-[600px] bg-(--primary) opacity-[0.03] blur-[100px] -z-10 rounded-full pointer-events-none"></div>
 
       {/* Header */}
       <div className="flex flex-col items-center mb-8">

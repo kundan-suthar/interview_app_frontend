@@ -90,21 +90,18 @@ export async function apiClient<T>(
   }
 
   if (!response.ok) {
-    const errorData = await response.json();
+    const errorData = await response.json().catch(() => ({}));
 
-    if (response.status === 403 && errorData.detail.detail === "PROFILE_INCOMPLETE") {
-      // redirect globally
+    if (response.status === 403 && errorData?.detail?.detail === "PROFILE_INCOMPLETE") {
       window.location.href = "/dashboard/profile";
     }
 
-    const error = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || "Something went wrong");
-    
-  }
-  return response.json();
-  } catch (error) {
-    console.log("errorrrrrrrrrrrrr", error);
-    
+    throw new Error(errorData?.detail || "Something went wrong");
   }
 
+  return response.json();
+  } catch (error) {
+    console.error("API client error:", error);
+    throw error;
+  }
 }

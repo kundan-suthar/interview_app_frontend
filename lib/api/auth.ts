@@ -4,6 +4,8 @@ import { useAuthStore } from "@/store/authStore";
 
 export const authApi = {
   login: async (formData: FormData) => {
+    console.log("jdhffhulh");
+    
     const response = await fetch(`${BASE_URL}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },

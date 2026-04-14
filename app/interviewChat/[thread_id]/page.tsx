@@ -13,12 +13,17 @@ import {
   Zap,
   ChevronRight,
   MoreVertical,
+  StopCircle,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import CountDown from "./CountDown";
 import Modal from "../../components/Modal";
+import { AudioQueue } from "@/lib/audioQueue";
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
+import { transcribeAudio } from "@/lib/transcribeAudio";
 
 interface Message {
   id: string;
@@ -36,6 +41,37 @@ export default function InterviewChatPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
+  const { recorderState, error, startRecording, stopRecording, reset } = useAudioRecorder();
+
+
+  const handleMicClick = async () => {
+    const { accessToken } = useAuthStore.getState();
+
+    // ── Start recording ────────────────────────────────────────────────
+    if (recorderState === "idle") {
+      await startRecording();
+      return;
+    }
+
+    // ── Stop → transcribe → send ───────────────────────────────────────
+    if (recorderState === "recording") {
+      try {
+        const audioBlob = await stopRecording();           // stops mic
+        const text = await transcribeAudio(audioBlob); // Whisper
+
+        reset();
+
+        if (text.trim()) {
+          setInput(text);          // show transcribed text in input box
+          await handleSend(text);  // your existing function, unchanged
+        }
+      } catch (err) {
+        console.error("Voice input failed:", err);
+        reset();
+      }
+    }
+  };
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -49,25 +85,29 @@ export default function InterviewChatPage() {
     }, 4000);
   };
 
+  const audioQueueRef = useRef<AudioQueue | null>(null);
+
+  // Initialize AudioQueue once (call this on component mount or first user interaction)
+  const initAudio = () => {
+    if (!audioQueueRef.current) {
+      audioQueueRef.current = new AudioQueue();
+    }
+  };
+
   const readChatStream = async (query: string, aiId: string) => {
     const { accessToken } = useAuthStore.getState();
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(query)}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-
-      // const res = await apiClient<any>(`/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(query)}`, {
-      //   method: "POST",
-      //   body: new URLSearchParams({
-      //     session_id: thread_id as string,
-      //     user_message: query,
-      //   }),
-      // });
-
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/interview/chat?session_id=${thread_id}&user_message=${encodeURIComponent(query)}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const reader = res.body?.getReader();
       if (!reader) return;
@@ -79,7 +119,6 @@ export default function InterviewChatPage() {
         const { done, value } = await reader.read();
         if (done) break;
 
-        // Append new chunk to buffer and split by SSE message delimiter
         buffer += decoder.decode(value, { stream: true });
         const parts = buffer.split("\n\n");
         buffer = parts.pop() || "";
@@ -95,17 +134,71 @@ export default function InterviewChatPage() {
             if (line.startsWith("event: ")) {
               eventType = line.slice(7).trim();
             } else if (line.startsWith("data: ")) {
-              data = line.slice(6);
+              data = line.slice(6).trim();
             }
           }
 
-          // If it's a 'token' event, append data to the current AI message
-          if (eventType === "token" && data) {
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === aiId ? { ...msg, text: msg.text + data } : msg
-              )
-            );
+          if (!eventType || !data || data === "[DONE]") continue;
+
+          // ── token: append text to chat bubble ──────────────────────────
+          if (eventType === "token") {
+            try {
+              const parsed = JSON.parse(data);
+              const text = parsed?.text ?? data;
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === aiId ? { ...msg, text: msg.text + text } : msg
+                )
+              );
+            } catch {
+              // fallback: raw string token (non-JSON backend)
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === aiId ? { ...msg, text: msg.text + data } : msg
+                )
+              );
+            }
+          }
+
+          // ── audio: enqueue WAV chunk for sequential playback ────────────
+          else if (eventType === "audio") {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed?.audio) {
+                initAudio();
+                audioQueueRef.current?.enqueue(parsed.audio);
+              }
+            } catch {
+              console.error("Failed to parse audio event:", data);
+            }
+          }
+
+          // ── status: handle interview lifecycle ──────────────────────────
+          else if (eventType === "status") {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed?.status === "completed") {
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === aiId ? { ...msg, isComplete: true } : msg
+                  )
+                );
+                audioQueueRef.current?.stop(); // optional: let last chunk finish first
+              }
+            } catch {
+              console.error("Failed to parse status event:", data);
+            }
+          }
+
+          // ── time: update timer UI ───────────────────────────────────────
+          else if (eventType === "time") {
+            try {
+              const parsed = JSON.parse(data);
+              // e.g. setTimeState(parsed) — wire to your timer component
+              console.log("Time state:", parsed);
+            } catch {
+              console.error("Failed to parse time event:", data);
+            }
           }
         }
       }
@@ -220,7 +313,7 @@ export default function InterviewChatPage() {
           <div className="flex items-center gap-2 bg-(--surface-container-low) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--outline-variant)/10">
             <Timer size={14} className="text-(--error)" />
             <span className="text-xs lg:text-sm font-bold font-mono tracking-wider text-(--on-surface)">
-              <CountDown initialMinutes={2} onComplete={onComplete} />
+              <CountDown initialMinutes={5} onComplete={onComplete} />
             </span>
           </div>
           <button className="flex items-center gap-2 bg-(--error)/10 hover:bg-(--error)/20 text-(--error) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--error)/20 transition-all font-bold text-xs lg:text-sm">
@@ -348,8 +441,30 @@ export default function InterviewChatPage() {
                 </div>
 
                 <div className="flex items-center gap-2 lg:gap-3 pr-1 lg:pr-2">
-                  <button className="hidden sm:flex p-2 text-(--on-surface-variant) hover:text-(--on-surface) transition-colors hover:bg-white/5 rounded-xl">
-                    <FileText size={18} className="lg:size-[20px]" />
+                  <button
+                    onClick={handleMicClick}
+                    disabled={recorderState === "processing"}
+                    className={`p-2 rounded-full cursor-pointer bg-primary-gradient text-(--surface) hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-lg shadow-(--primary)/10 shrink-0 ${recorderState === "recording"
+                      ? "bg-red-500 text-white animate-pulse"   // recording indicator
+                      : recorderState === "processing"
+                        ? "bg-gray-300 text-gray-500 cursor-wait" // transcribing spinner
+                        : "bg-gray-100 hover:bg-gray-200"         // idle
+                      }`}
+                    title={
+                      recorderState === "recording"
+                        ? "Click to stop and send"
+                        : recorderState === "processing"
+                          ? "Transcribing..."
+                          : "Click to speak"
+                    }
+                  >
+                    {recorderState === "recording" ? (
+                      <StopCircle className="w-5 h-5" />
+                    ) : recorderState === "processing" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Mic className="w-5 h-5" />
+                    )}
                   </button>
                   <button
                     onClick={() => handleSend(input)}
