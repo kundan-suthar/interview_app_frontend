@@ -38,7 +38,10 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const res: any = await authApi.login(formData);
+      const res: any = await fetch('/api/login', {
+        method: "POST",
+        body: formData,
+      });
       reset();
       router.push("/dashboard")
       return res;
