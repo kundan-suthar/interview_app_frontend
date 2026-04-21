@@ -17,6 +17,7 @@
     "openai": "^6.34.0",
     "react": "19.2.4",
     "react-circular-progressbar": "^2.2.0",
+    "react-countdown": "^2.3.6",
     "react-dom": "19.2.4",
     "react-dropzone": "^15.0.0",
     "react-hook-form": "^7.72.0",

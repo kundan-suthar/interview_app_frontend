@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { LayoutDashboard, Mic, User, Settings, Zap, Play, LogOut, Mail, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { User as userType } from "../profile/types";
-import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/useAppStore";
 import { apiClient } from "@/lib/api/client";
 import { authApi } from "@/lib/api/auth";
 
@@ -24,7 +24,7 @@ type SidebarProps = {
 export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const logout = useAuthStore((state) => state.clear);
+  const logout = useAppStore((state) => state.clear);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +58,7 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
           onClick={onClose}
         />
@@ -88,8 +88,8 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
               The Digital Mentor
             </span>
           </div>
-          
-          <button 
+
+          <button
             onClick={onClose}
             className="lg:hidden p-2 text-(--on-surface-variant) hover:text-(--on-surface) hover:bg-(--surface-container-high) rounded-xl transition-colors"
           >

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Bot,
   User,
@@ -18,13 +18,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/useAppStore";
 import CountDown from "./CountDown";
 import Modal from "../../components/Modal";
 import { AudioQueue } from "@/lib/audioQueue";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { transcribeAudio } from "@/lib/transcribeAudio";
-
 interface Message {
   id: string;
   sender: "ai" | "user";
@@ -39,13 +38,14 @@ export default function InterviewChatPage() {
   const { thread_id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { duration_minutes } = useAppStore();
   const router = useRouter();
 
   const { recorderState, error, startRecording, stopRecording, reset } = useAudioRecorder();
 
 
   const handleMicClick = async () => {
-    const { accessToken } = useAuthStore.getState();
+    const { accessToken } = useAppStore.getState();
 
     // ── Start recording ────────────────────────────────────────────────
     if (recorderState === "idle") {
@@ -95,7 +95,7 @@ export default function InterviewChatPage() {
   };
 
   const readChatStream = async (query: string, aiId: string) => {
-    const { accessToken } = useAuthStore.getState();
+    const { accessToken } = useAppStore.getState();
 
     try {
       const res = await fetch(
@@ -313,7 +313,7 @@ export default function InterviewChatPage() {
           <div className="flex items-center gap-2 bg-(--surface-container-low) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--outline-variant)/10">
             <Timer size={14} className="text-(--error)" />
             <span className="text-xs lg:text-sm font-bold font-mono tracking-wider text-(--on-surface)">
-              <CountDown initialMinutes={5} onComplete={onComplete} />
+              <CountDown initialMinutes={duration_minutes} onComplete={onComplete} />
             </span>
           </div>
           <button className="flex items-center gap-2 bg-(--error)/10 hover:bg-(--error)/20 text-(--error) px-2 lg:px-4 py-1.5 lg:py-2 rounded-xl border border-(--error)/20 transition-all font-bold text-xs lg:text-sm">

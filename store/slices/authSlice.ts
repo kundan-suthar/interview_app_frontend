@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create, StateCreator } from "zustand";
 
-interface AuthState {
+export interface AuthState {
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -9,15 +9,15 @@ interface AuthState {
   clear: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const createAuthSlice: StateCreator<AuthState> = (set) => ({
   accessToken: null,
   isAuthenticated: false,
   isLoading: true,
 
-  setAccessToken: (token) =>
+  setAccessToken: (token: string | null) =>
     set({ accessToken: token, isAuthenticated: !!token }),
 
-  setLoading: (loading) => set({ isLoading: loading }),
+  setLoading: (loading:boolean) => set({ isLoading: loading }),
 
   clear: () => set({ accessToken: null, isAuthenticated: false }),
-}));
+});

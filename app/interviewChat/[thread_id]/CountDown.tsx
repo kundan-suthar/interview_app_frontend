@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import React, { useMemo } from "react"
+import Countdown from "react-countdown"
 
 interface CountDownProps {
     initialMinutes?: number
@@ -9,38 +10,27 @@ const CountDown: React.FC<CountDownProps> = ({
     initialMinutes = 0.1,
     onComplete
 }) => {
-    const [time, setTime] = useState<number>(initialMinutes * 60)
-    const [isActive, setIsActive] = useState<boolean>(true)
-    const hasRun = useRef(false)
-    useEffect(() => {
-        if (hasRun.current) return
-        let interval: NodeJS.Timeout | null = null
+    const endTime = useMemo(() => Date.now() + initialMinutes * 60 * 1000, [initialMinutes]);
 
-        if (isActive && time > 0) {
-            interval = setInterval(() => {
-                setTime((prevTime: number) => prevTime - 1)
-            }, 1000)
-        } else if (time === 0) {
-            setIsActive(false)
-            onComplete?.() // Call callback if provided
-            hasRun.current = true
+    const renderer = useMemo(() => ({ minutes, seconds, completed }: { minutes: number, seconds: number, completed: boolean }) => {
+        if (completed) {
+            return null;
+        } else {
+            // Render a countdown
+            return (
+                <span>
+                    {minutes}:{seconds}{" "}
+                </span>
+            );
         }
-
-        return () => {
-            if (interval) clearInterval(interval)
-        }
-    }, [isActive, time, onComplete])
-
-    const formatTime = (seconds: number): string => {
-        const minutes: number = Math.floor(seconds / 60)
-        const remainingSeconds: number = seconds % 60
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
-    }
+    }, []);
 
     return (
-        <>
-            {formatTime(time)}
-        </>
+        <Countdown
+            date={endTime}
+            renderer={renderer}
+            onComplete={onComplete}
+        />
     )
 }
 

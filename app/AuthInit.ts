@@ -1,10 +1,10 @@
 "use client";
 import { useEffect } from "react";
-import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/useAppStore";
 import { authApi } from "@/lib/api/auth";
 
 export default function AuthInit() {
-  const { setAccessToken, setLoading, clear } = useAuthStore();
+  const { setAccessToken, setLoading, clear } = useAppStore();
 
   useEffect(() => {
     const initAuth = async () => {

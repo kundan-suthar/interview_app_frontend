@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/useAppStore";
 import { authApi } from "./auth";
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -18,7 +18,7 @@ export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const { accessToken, setAccessToken, clear } = useAuthStore.getState();
+  const { accessToken, setAccessToken, clear } = useAppStore.getState();
   
 
   const headers = new Headers(options.headers);
