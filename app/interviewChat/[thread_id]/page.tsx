@@ -81,7 +81,7 @@ export default function InterviewChatPage() {
   const onComplete = () => {
     setIsModalOpen(true);
     setTimeout(() => {
-      router.push("/dashboard/conclusion");
+      router.push(`/dashboard/conclusion/${thread_id}`);
     }, 4000);
   };
 
