@@ -16,7 +16,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   console.log("hihdhd");
-  
+
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -32,7 +32,7 @@ export default function LoginPage() {
     setServerError(null);
     const formData = new FormData();
     console.log("jfhkhgj");
-    
+
     formData.append("username", data.email);
     formData.append("password", data.password);
 
@@ -42,6 +42,13 @@ export default function LoginPage() {
         method: "POST",
         body: formData,
       });
+      const data = await res.json();
+
+      if (data.error) {
+        setServerError(data.error);
+        return;
+      }
+
       reset();
       router.push("/dashboard")
       return res;

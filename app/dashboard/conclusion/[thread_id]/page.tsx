@@ -52,22 +52,53 @@ const ConclusionPage = () => {
     const { thread_id } = useParams();
     const [data, setData] = useState<ConclusionData | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const [status, setStatus] = useState<'pending' | 'completed' | 'failed'>('pending');
     useEffect(() => {
+        let pollInterval: NodeJS.Timeout;
+        let isMounted = true;
+
         const fetchConclusion = async () => {
             try {
-                const res = await apiClient(`/api/interview/conclusion/${thread_id}`);
-                setData(res as ConclusionData);
+                const res = await apiClient<ConclusionData>(`/api/interview/conclusion/${thread_id}`);
+
+                if (isMounted) {
+                    if (res?.analysis_status === 'pending') {
+                        // Still processing, continue polling
+                        setStatus('pending');
+                        setLoading(false);
+                    } else if (res?.analysis_status === 'completed') {
+                        setData(res as ConclusionData);
+                        setStatus('completed');
+                        setLoading(false);
+                        clearInterval(pollInterval);
+                    } else if (res?.analysis_status === 'failed') {
+                        setStatus('failed');
+                        setLoading(false);
+                        clearInterval(pollInterval);
+                    }
+                }
             } catch (err) {
-                console.error("Failed to fetch conclusion:", err);
-            } finally {
-                setLoading(false);
+                if (isMounted) {
+                    console.error("Failed to fetch conclusion:", err);
+                    setStatus('failed');
+                    setLoading(false);
+                    clearInterval(pollInterval);
+                }
             }
         };
 
         if (thread_id) {
+            // Initial fetch
             fetchConclusion();
+
+            // Set up polling every 2 seconds
+            pollInterval = setInterval(fetchConclusion, 2000);
         }
+
+        return () => {
+            isMounted = false;
+            if (pollInterval) clearInterval(pollInterval);
+        };
     }, [thread_id]);
 
     if (loading) {
@@ -76,6 +107,22 @@ const ConclusionPage = () => {
                 <Loader2 className="w-8 h-8 animate-spin text-(--primary)" />
             </div>
         );
+    }
+    if (status === 'pending') {
+        return (
+            <div className="min-h-screen bg-(--surface) flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-(--primary)" />
+                <p className="text-white">Pending</p>
+            </div>
+        )
+    }
+    if (status === 'failed') {
+        return (
+            <div className="min-h-screen bg-(--surface) flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 animate-spin text-(--primary)" />
+                <p className="text-white">Failed to fetch conclusion</p>
+            </div>
+        )
     }
 
     if (!data) {
