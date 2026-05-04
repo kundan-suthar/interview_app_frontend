@@ -22,6 +22,7 @@ import Link from "next/link";
 import { ResumeAnalysisResponse, InterviewSessionResponse } from "./types";
 import { apiClient } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
+import { useAppStore } from "@/store/useAppStore";
 
 interface SkillTagProps {
   name: string;
@@ -58,6 +59,7 @@ export default function MatchAnalytics({
   const missingSkills = profileData.missing_skills;
 
   const matchScore = profileData.profile_match;
+  const {setDurationMinutes} = useAppStore()
   const handleStartInterview = async () => {
     try {
       setLoading(true);
@@ -70,7 +72,7 @@ export default function MatchAnalytics({
           job_description: jobDescription,
         }),
       })) as InterviewSessionResponse;
-
+      setDurationMinutes(response?.duration_minutes);
       if (response?.session_id) {
         router.push(`/interviewChat/${response.session_id}`);
       }

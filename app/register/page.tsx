@@ -76,7 +76,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-(--surface) relative isolate py-12">
       {/* Background ambient light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-(--primary) opacity-[0.03] blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-100vw h-[600px] bg-(--primary) opacity-[0.03] blur-[100px] -z-10 rounded-full pointer-events-none"></div>
 
       {/* Header */}
       <div className="flex flex-col items-center mb-8">

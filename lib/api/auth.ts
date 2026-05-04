@@ -1,9 +1,11 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 import { getErrorMessage } from "./errors";
-import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/useAppStore";
 
 export const authApi = {
   login: async (formData: FormData) => {
+    console.log("jdhffhulh");
+    
     const response = await fetch(`${BASE_URL}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -32,7 +34,7 @@ export const authApi = {
   },
 
   logout: async () => {
-      const { accessToken } = useAuthStore.getState();
+      const { accessToken } = useAppStore.getState();
 
     await fetch(`${BASE_URL}/logout`, {
       method: "POST",

@@ -1,6 +1,6 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 import { getErrorMessage } from "./errors";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/slices/authSlice";
 
 export const interviewApi = {
   chat: async (formData: FormData) => {

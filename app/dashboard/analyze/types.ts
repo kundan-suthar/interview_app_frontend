@@ -26,4 +26,5 @@ export interface ResumeAnalysisResponse {
 }
 export interface InterviewSessionResponse {
   session_id: string;
+  duration_minutes: number;
 }
