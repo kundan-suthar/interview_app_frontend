@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   console.log("from api/login");
-  
+
   try {
     const formData = await request.formData();
     const username = formData.get("username") as string;
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`http://localhost:8000/auth/jwt/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_UR}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Forward any cookies from the backend
     const nextResponse = NextResponse.json(data);
-    
+
     // If the backend sets cookies, forward them
     const setCookie = response.headers.get("set-cookie");
     if (setCookie) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     return nextResponse;
-    
+
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
