@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_UR}/auth/jwt/login`, {
+    console.log(`${process.env.NEXT_PUBLIC_API_URL}/auth/jwt/login`)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
