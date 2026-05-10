@@ -1,5 +1,6 @@
 "use client"
 
+import { apiClient } from "@/lib/api/client";
 import { useSearchParams, useRouter } from "next/navigation"
 import { useEffect, Suspense } from "react"
 
@@ -27,11 +28,34 @@ function VerifyEmail() {
       console.log(error);
     }
   }
+  const isVerified = async () => {
+    console.log("hello from verify api")
+    try {
+      const data = await apiClient<any>("/api/v1/users/is_verified", {
+        method: "GET",
+      })
+      // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/is_verified`, {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   credentials: "include",
+      // });
+
+      console.log(data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
-    getVerfied();
+    const abc = async () => {
+      await getVerfied();
+      await isVerified()
+    }
+    abc()
   }, []);
   return <div>
-    <button>Verify Email</button>
+    <button className="p-4 m-4 bg-surface-container-highest text-primary" onClick={() => isVerified()}>Verify Email</button>
   </div>
 }
 

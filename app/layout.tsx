@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${manrope.variable} ${inter.variable}`}>
-      <body>
+      <body suppressHydrationWarning>
         <AuthInit />
 
         {children}

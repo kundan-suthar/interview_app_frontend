@@ -68,19 +68,15 @@ export default function DashboardPage() {
   ];
 
 
-  const recentInterviews = !dashboardData ? [] : dashboardData?.table_data.map((itm) => {
-    return (
-      {
-        role: itm?.required_job_title,
-        date: format(itm?.created_at, "d MMM yyyy"),
-        score: itm.profile_match,
-        status: itm.status,
-        thread_id: itm.thread_id
-      }
-
-    )
-
-  })
+  const recentInterviews = dashboardData?.table_data?.map((itm) => {
+    return {
+      role: itm?.required_job_title,
+      date: format(itm?.created_at, "d MMM yyyy"),
+      score: itm.profile_match,
+      status: itm.status,
+      thread_id: itm.thread_id
+    };
+  }) || [];
   // console.log("recent inter", recentInterviews)
 
   const getDashboardData = async () => {

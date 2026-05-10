@@ -1,35 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// 1. Specify protected and public routes
-const protectedRoutes = [
-  "/dashboard",
-  "/dashboard/*",
-  "/interviewChat",
-  "/interviewChat/*",
-];
-const publicRoutes = ["/login", "/signup", "/", "/login/*", "/signup/*"];
+const protectedRoutes = ["/dashboard", "/interviewChat"];
 
-export default async function proxy(req: NextRequest) {
-  // 2. Check if the current route is protected or public
+const isProtected = (path: string) => {
+  return protectedRoutes.some((route) => path.startsWith(route));
+};
+
+export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
-  const token = req.cookies.get("refresh_token");
 
-  // 4. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  const token = req.cookies.get("refresh_token")?.value;
+  const isVerified = req.cookies.get("is_verified")?.value === "True";
+
+  const protectedRoute = isProtected(path);
+
+  // ✅ 1. If protected route → must be logged in
+  if (protectedRoute && !token) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // 5. Redirect to /dashboard if the user is authenticated
-  if (isPublicRoute && token) {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  // ✅ 2. If protected route → must be verified
+    if (protectedRoute && token && !isVerified) {
+      console.log("hello")
+      return NextResponse.redirect(new URL("/verifyEmailDetails", req.url));
+    }
+
+
+  // ✅ 3. Prevent verified users from going back to auth pages
+  if ((path === "/login" || path === "/signup") && token) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
 }
 
-// Routes Proxy should not run on
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
