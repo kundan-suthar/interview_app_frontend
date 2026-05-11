@@ -4,8 +4,7 @@ import { useAppStore } from "@/store/useAppStore";
 
 export const authApi = {
   login: async (formData: FormData) => {
-    console.log("jdhffhulh");
-    
+
     const response = await fetch(`${BASE_URL}/auth/jwt/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -24,24 +23,28 @@ export const authApi = {
   },
 
   refresh: async () => {
-    const response = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    });
-    let res = await response.json();
-    if (!response.ok) throw new Error(getErrorMessage(res.detail));
-    return res;
+    try {
+      const response = await fetch(`/api/proxy/api/v1/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      let res = await response.json();
+      if (!response.ok) throw new Error(getErrorMessage(res.detail));
+      return res;
+    } catch (error) {
+      console.log(error)
+    }
   },
 
   logout: async () => {
-      const { accessToken } = useAppStore.getState();
+    const { accessToken } = useAppStore.getState();
 
     await fetch(`${BASE_URL}/logout`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`  
+        "Authorization": `Bearer ${accessToken}`
       },
     });
   },

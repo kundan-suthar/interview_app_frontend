@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/auth";
+import { useAppStore } from "@/store/useAppStore";
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
@@ -28,6 +29,7 @@ export default function LoginPage() {
     resolver: zodResolver(schema),
   });
   const router = useRouter();
+  const { setAccessToken } = useAppStore();
   const onSubmit = async (data: FormData) => {
     setServerError(null);
     const formData = new FormData();
@@ -48,7 +50,7 @@ export default function LoginPage() {
         setServerError(data.error);
         return;
       }
-
+      setAccessToken(data.access_token);
       reset();
       router.push("/dashboard")
       return res;

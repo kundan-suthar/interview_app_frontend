@@ -21,6 +21,7 @@ export default function DashboardLayout({
 
   const getUserDetails = async () => {
     try {
+      
       const res = await apiClient<User>("/api/v1/users/me");
       //  const parsed = UserSchema.safeParse(res);
       //   if (!parsed.success) {
