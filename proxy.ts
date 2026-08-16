@@ -10,23 +10,20 @@ export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   const token = req.cookies.get("refresh_token")?.value;
-  const isVerified = req.cookies.get("is_verified")?.value.toLocaleLowerCase() === "true";
-  console.log("proxy is verified value:", isVerified)
+  const isVerified = req.cookies.get("is_verified")?.value?.toLowerCase() === "true";
   const protectedRoute = isProtected(path);
 
-  // ✅ 1. If protected route → must be logged in
+  // If protected route → must be logged in
   if (protectedRoute && !token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // ✅ 2. If protected route → must be verified
+  // If protected route → must be verified
   if (protectedRoute && token && !isVerified) {
-    console.log("hello")
     return NextResponse.redirect(new URL("/verifyEmailDetails", req.url));
   }
 
-
-  // ✅ 3. Prevent verified users from going back to auth pages
+  // Prevent verified users from going back to auth pages
   if ((path === "/login" || path === "/signup") && token) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }

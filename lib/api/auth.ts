@@ -39,13 +39,20 @@ export const authApi = {
   logout: async () => {
     const { accessToken } = useAppStore.getState();
 
-    await fetch(`${BASE_URL}/logout`, {
+    const response = await fetch(`/api/logout`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
     });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data?.error || "Logout failed");
+    }
+
+    return response;
   },
 };
