@@ -54,7 +54,7 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      let res = await fetch("http://127.0.0.1:8000/api/v1/auth/register", {
+      let res = await fetch("/api/v1/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export default function RegisterPage() {
       });
       if (res.status === 201) {
         reset();
-        router.push("/dashboard/profile")
+        router.push("/dashboard/profile");
       } else if (res.status === 400) {
         const error = await res.json(); // 👈 await
         setServerError(error.detail);
