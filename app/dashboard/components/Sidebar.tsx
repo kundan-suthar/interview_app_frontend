@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, Mic, User, Settings, Zap, Play, LogOut, Mail, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  Mic,
+  User,
+  Settings,
+  Zap,
+  Play,
+  LogOut,
+  Mail,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { User as userType } from "../profile/types";
 import { useAppStore } from "@/store/useAppStore";
@@ -21,7 +31,11 @@ type SidebarProps = {
   isOpen?: boolean;
   onClose?: () => void;
 };
-export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) {
+export default function Sidebar({
+  userDetails,
+  isOpen,
+  onClose,
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAppStore((state) => state.clear);
@@ -31,7 +45,10 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
   // Close modal when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         setShowProfileModal(false);
       }
     }
@@ -45,13 +62,13 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
 
   const handleLogout = async () => {
     try {
-      const res = await authApi.logout();
-      console.log(res);
+      await authApi.logout();
     } catch (error) {
-      console.log(error);
+      console.log("Logout failed on backend:", error);
+    } finally {
+      logout();
+      router.replace("/login");
     }
-    logout();
-    router.push("/login");
   };
 
   return (
@@ -64,10 +81,12 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
         />
       )}
 
-      <aside className={cn(
-        "fixed inset-y-0 left-0 w-72 lg:static lg:w-64 h-full flex flex-col bg-(--surface-container-low) border-r border-(--outline-variant)/10 p-6 z-[70] overflow-y-auto shrink-0 transition-all duration-300 transform",
-        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 w-72 lg:static lg:w-64 h-full flex flex-col bg-(--surface-container-low) border-r border-(--outline-variant)/10 p-6 z-[70] overflow-y-auto shrink-0 transition-all duration-300 transform",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        )}
+      >
         {/* Logo & Close Button */}
         <div className="flex items-center justify-between mb-10">
           <div className="flex flex-col">
@@ -164,7 +183,7 @@ export default function Sidebar({ userDetails, isOpen, onClose }: SidebarProps) 
               "flex items-center gap-3 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 border border-transparent",
               showProfileModal
                 ? "bg-(--surface-container-highest) border-(--outline-variant)/30 ring-1 ring-(--primary)/20 shadow-lg"
-                : "hover:bg-(--surface-container-high) hover:border-(--outline-variant)/10"
+                : "hover:bg-(--surface-container-high) hover:border-(--outline-variant)/10",
             )}
           >
             <div className="w-10 h-10 rounded-full bg-linear-to-tr from-orange-400 to-pink-500 p-0.5 overflow-hidden shadow-md">
