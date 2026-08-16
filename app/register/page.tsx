@@ -54,13 +54,16 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      let res = await fetch("/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      let res = await fetch(
+        "https://interview-app-qj9t.onrender.com/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
       if (res.status === 201) {
         reset();
         router.push("/dashboard/profile");
