@@ -15,9 +15,10 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function LoginPage() {
-  console.log("hihdhd");
+const DEMO_EMAIL = "kundansuthar30@gmail.com";
+const DEMO_PASSWORD = "Kundan@123";
 
+export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -30,29 +31,30 @@ export default function LoginPage() {
   });
   const router = useRouter();
   const { setAccessToken } = useAppStore();
-  const onSubmit = async (data: FormData) => {
-    setServerError(null);
-    const formData = new FormData();
-    console.log("jfhkhgj");
 
-    formData.append("username", data.email);
-    formData.append("password", data.password);
+  const loginWithCredentials = async (username: string, password: string) => {
+    setServerError(null);
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
 
     try {
       setLoading(true);
-      const res: any = await fetch('/api/login', {
+      const res: any = await fetch("/api/login", {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
+      const responseData = await res.json();
 
-      if (data.error) {
-        setServerError(data.error);
+      if (responseData.error) {
+        setServerError(responseData.error);
         return;
       }
-      setAccessToken(data.access_token);
+
+      setAccessToken(responseData.access_token);
       reset();
-      router.push("/dashboard")
+      router.push("/dashboard");
       return res;
     } catch (error: any) {
       console.log("error", error.message);
@@ -60,6 +62,14 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onSubmit = async (data: FormData) => {
+    await loginWithCredentials(data.email, data.password);
+  };
+
+  const handleDemoLogin = async () => {
+    await loginWithCredentials(DEMO_EMAIL, DEMO_PASSWORD);
   };
   return (
     <div className="min-dvh-screen flex flex-col items-center justify-center p-4 bg-(--surface) relative isolate">
@@ -137,6 +147,19 @@ export default function LoginPage() {
             disabled={loading}
           >
             {loading ? <Loader className="animate-spin" /> : "Sign In"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="w-full bg-(--surface-bright) hover:bg-(--outline-variant)/40 border border-(--outline-variant)/30 text-(--on-surface) font-medium py-3 rounded-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Login as Demo Account"
+            )}
           </button>
         </form>
 
