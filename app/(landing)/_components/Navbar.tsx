@@ -53,7 +53,7 @@ export const Navbar = () => {
           >
             Sign In
           </CTAButton>
-          <CTAButton variant="primary" href="/signup">
+          <CTAButton variant="primary" href="/register">
             Get Started
           </CTAButton>
         </div>
